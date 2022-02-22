@@ -71,7 +71,7 @@ plt.close()
 '''
 Sorted_Index_HoughTransform =  np.argsort(hough_space, axis=None)
 
-print 'Sorted_Index_HoughTransform[0]', Sorted_Index_HoughTransform[0]
+#print 'Sorted_Index_HoughTransform[0]', Sorted_Index_HoughTransform[0]
 #print Sorted_Index_HoughTransform.shape, r_dim * theta_dim
 
 shape = Sorted_Index_HoughTransform.shape
@@ -101,8 +101,8 @@ for d in range(5):
 import scipy.ndimage.filters as filters
 import scipy.ndimage as ndimage
 
-neighborhood_size = 20
-threshold = 140
+neighborhood_size = 150
+threshold = 150
 
 data_max = filters.maximum_filter(hough_space, neighborhood_size)
 maxima = (hough_space == data_max)
@@ -137,24 +137,44 @@ plt.close()
 # Step 4: Plot lines
 
 line_index = 1
-
+non_filtered_points=[]
+points=[]
 for i,j in zip(y, x):
 
     r = round( (1.0 * i * r_max ) / r_dim,1)
     theta = round( (1.0 * j * theta_max) / theta_dim,1)
 
-    fig, ax = plt.subplots()
-
-    ax.imshow(img)
-
-    ax.autoscale(False)
-
+    
+    
     px = []
     py = []
     for i in range(-y_max-40,y_max+40,1):
         px.append( math.cos(-theta) * i - math.sin(-theta) * r ) 
         py.append( math.sin(-theta) * i + math.cos(-theta) * r )
 
+# Filter out vertical lines here
+    dx=px[5]-px[4]
+    dy=py[5]-py[4]
+    non_filtered_points.append([px,py])
+    if dy/dx < 1 :
+        fig, ax = plt.subplots()
+
+        ax.imshow(img)
+
+        ax.autoscale(False)
+        points.append([px,py])
+        ax.plot(px,py, color='red',linewidth=2)
+
+        plt.savefig("image_line_"+ "%02d" % line_index +".png",bbox_inches='tight')
+
+        #plt.show()
+
+        plt.close()
+    
+    line_index = line_index + 1
+
+    # 
+'''
     ax.plot(px,py, linewidth=10)
 
     plt.savefig("image_line_"+ "%02d" % line_index +".png",bbox_inches='tight')
@@ -162,46 +182,22 @@ for i,j in zip(y, x):
     #plt.show()
 
     plt.close()
+'''
 
-    line_index = line_index + 1
 
 #----------------------------------------------------------------------------------------#
 # Plot lines
 '''
-i = 11
-j = 264
+    i = 11
+    j = 264
 
-i = y[1]
-j = x[1]
+    i = y[1]
+    j = x[1]
 
-print i,j
+    print i,j
 
-r = round( (1.0 * i * r_max ) / r_dim,1)
-theta = round( (1.0 * j * theta_max) / theta_dim,1)
-
-print 'r', r
-print 'theta', theta
-
-
-fig, ax = plt.subplots()
-
-ax.imshow(img)
-
-ax.autoscale(False)
-
-px = []
-py = []
-for i in range(-y_max-40,y_max+40,1):
-    px.append( math.cos(-theta) * i - math.sin(-theta) * r ) 
-    py.append( math.sin(-theta) * i + math.cos(-theta) * r )
-
-print px
-print py
-
-ax.plot(px,py, linewidth=10)
-
-plt.savefig("PlottedLine_07.png",bbox_inches='tight')
-
-#plt.show()
-
+    r = round( (1.0 * i * r_max ) / r_dim,1)
+    theta = round( (1.0 * j * theta_max) / theta_dim,1)
 '''
+print(len(points))
+print(len(non_filtered_points))
