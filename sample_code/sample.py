@@ -9,7 +9,8 @@ from PIL import ImageDraw
 
 if __name__ == '__main__':
     # load the image
-    im = Image.open('first_photograph.png')
+    im = Image.open(r'C:\Users\Izzy\a1-group1\sample_code\first_photograph.png')
+   # im = Image.open(r'C:\Users\Izzy\a1-group1\test-images\music1.png')
 
     #Check it's  width ,  height, and number of  color channels
     print('Image is %s pixels  wide. '%im.width)
