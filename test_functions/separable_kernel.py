@@ -1,6 +1,7 @@
+import numpy as np
 def separable_kernel(hx,hy, img):
     #Test purposes
-    im_arr = np.array(im)
+    im_arr = np.array(img)
     n = hy.shape[1]
     midPt = int(np.floor(n/2))
     arr = np.pad(im_arr, midPt, mode='constant')
