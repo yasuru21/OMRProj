@@ -58,26 +58,26 @@ class houghTransform():
         return temp
 
 
-    def final_result(self, image, template, matchingType, textArray, symbol_type, p, dist, limitingFactor = 0.9): # referenced various sources to figure how to work PIL and get this correct
+    def final_result(self, image, template, mT, txtResult, symbol_type, p, dist, threshold = 0.9): # referenced various sources to figure how to work PIL and get this correct
         imgH, imgW = image.shape
         tempH, tempW = template.shape
     #     outImage = Image.fromarray(np.uint8(image)).convert("RGB")
         copy_image = image.copy()
         padding = 2
-        if matchingType=='naive':
+        if mT=='naive':
             maxScore = tempH * tempW
-            matchesForTemplate1 = nTM.naiveTemplateMatching(image, template, confidenceInterval = limitingFactor)
-        elif matchingType=='edge':
+            matches = nTM.naiveTemplateMatching(image, template, confidenceInterval = threshold)
+        elif mT=='edge':
             templateEdge, _, _ = nTM.getEdges(template)
             maxScore = np.sum(templateEdge)
-            matchesForTemplate1 = nTM.edgeDetectionTemplateMatching(image, template, thresholdFactor=limitingFactor)
+            matches = nTM.edgeDetectionTemplateMatching(image, template, thresholdFactor=threshold)
         else:
-            return copy_image, textArray
+            return copy_image, txtResult
         
-        #print("Matches from templates is", len(matchesForTemplate1))
-        if matchesForTemplate1==[]:
-            return copy_image, textArray
-        for score, start_x, start_y, end_x, end_y in matchesForTemplate1:
+       
+        if matches==[]:
+            return copy_image, txtResult
+        for score, start_x, start_y, end_x, end_y in matches:
             if end_x >= copy_image.shape[0]-3 or end_y >= copy_image.shape[1]-3:
                 continue
             copy_image[start_x-padding:end_x+(padding*2),start_y-padding] = 5
@@ -97,7 +97,7 @@ class houghTransform():
                 font = ImageFont.truetype('./arial.ttf', 15) 
                 draw.text((start_y-15, start_x-15),pitch,(70),font=font)
                 copy_image = np.array(copy_image)
-            textArray.append([start_x, start_y, end_x, end_y, symbol_type, pitch, float(np.round(((score/maxScore)*100), 2))])
+            txtResult.append([start_x, start_y, end_x, end_y, symbol_type, pitch, float(np.round(((score/maxScore)*100), 2))])
             
-        return copy_image, textArray
+        return copy_image, txtResult
 
