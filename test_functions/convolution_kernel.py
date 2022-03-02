@@ -27,8 +27,8 @@ class kernelOperations:
                 temp = arr[i:i+n,j].reshape(n,1) * hx.T
                 # tempImg[i,j] = int((np.sum(np.abs(temp)))/(divisionFactor)) 
                 tempImg[i,j] = np.abs(np.sum(temp))
-        divisionFactor = np.sum(hx.T*hy)
-        if divisionFactor==0:
+        divFac = np.sum(hx.T*hy)
+        if divFac==0:
             divisionFactor = n
         outImg = np.random.randn(tempImg.shape[0], tempImg.shape[1]-(2*midPt))
 
