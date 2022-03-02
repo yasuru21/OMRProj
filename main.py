@@ -4,10 +4,11 @@ from PIL import Image
 from PIL import ImageFilter
 import random
 from PIL import ImageDraw
-from convolution_kernel import kernelOperations
-from tempmatching import templateMatching
-from hough import houghTransform
-from hamming import hamming
+from test_functions.convolution_kernel import kernelOperations
+from test_functions.tempmatching import templateMatching
+from test_functions.hough import houghTransform
+from test_functions.hamming import hamming
+from test_functions.sheetmusicreader import sheetmusic
 
 def getResults(image, template1, template2, template3, d):
     # easily able to call classes into main  
@@ -15,6 +16,7 @@ def getResults(image, template1, template2, template3, d):
     nTM = templateMatching()
     ht = houghTransform()
     ham = hamming()
+    sheet = sheetmusic()
 
     
     image = np.array(image)
@@ -40,12 +42,12 @@ def getResults(image, template1, template2, template3, d):
     template3 = np.array(template3)
     template3 = ko.rgb2gray(template3)
     
-    pitchDictionary = ht.getPitchDictionary(firstLines, space)  # get dict to use
+    pitchDictionary = sheet.getPitchDictionary(firstLines, space)  # get dict to use
 
     outText = []
-    outImage, outText = ht.final_result(image, template1, d['type1'], outText, "filled_note", pitchDictionary, space, limitingFactor = d['template1Factor'])
-    outImage, outText = ht.final_result(outImage, template2, d['type2'], outText, "quarter_rest", pitchDictionary, space, limitingFactor = d['template2Factor'])
-    outImage, outText = ht.final_result(outImage, template3, d['type3'], outText, "eighth_rest", pitchDictionary, space, limitingFactor = d['template3Factor'])
+    outImage, outText = ht.final_result(image, template1, d['type1'], outText, "filled_note", pitchDictionary, space, threshold = d['template1Factor'])
+    outImage, outText = ht.final_result(outImage, template2, d['type2'], outText, "quarter_rest", pitchDictionary, space, threshold= d['template2Factor'])
+    outImage, outText = ht.final_result(outImage, template3, d['type3'], outText, "eighth_rest", pitchDictionary, space, threshold = d['template3Factor'])
     np.savetxt("detected.txt", outText, fmt="%s")
     outImage = Image.fromarray(np.uint8(outImage))
     outImage.save("detected.png","PNG")

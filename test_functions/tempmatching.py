@@ -1,5 +1,5 @@
 import numpy as np
-from convolution_kernel import kernelOperations
+from test_functions.convolution_kernel import kernelOperations
 
 
 # This covers problem # 6 on assignment pdf using scoring function with edge maps

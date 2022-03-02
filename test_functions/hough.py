@@ -3,7 +3,7 @@ from PIL import Image
 from PIL import ImageFilter
 import random
 from PIL import ImageDraw, ImageFont
-from tempmatching import templateMatching
+from test_functions.tempmatching import templateMatching
 nTM = templateMatching()
 
 class houghTransform():
