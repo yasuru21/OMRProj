@@ -1,207 +1,103 @@
-
-from scipy import misc
-
-import matplotlib.pyplot as plt
 import numpy as np
-import math
+from PIL import Image
+from PIL import ImageFilter
+import random
+from PIL import ImageDraw, ImageFont
+from tempmatch import templateMatching
+nTM = templateMatching()
 
-#----------------------------------------------------------------------------------------#
-# Step 1: read image
+class houghTransform():
 
-img = plt.imread('Edge_sample.png')
+    def __init__(self):
+        self.randomCount = 0
+
+    def hough(self, image):
+        space = 0
+        image = np.where(image<128,0,1)
+        x, y = image.shape
+        votesDict = {}
+        for i in range(x):
+            votesDict[i] = 0
+            for j in range(y):
+                if image[i][j]==0:
+                    votesDict[i] +=1
+        l = [key for key,value in votesDict.items() if value > int(0.5*y)]
+        
+        # Calculating the Space between the lines.
+        for i in range(0,len(l)-1):
+            if l[i]+1 != l[i+1]:
+                if space == 0:
+                    space = l[i+1]-l[i]
+                elif space == l[i+1]-l[i]:
+                    break
+        # Finding the row coordinates for the first lines
+        firstLines = [l[0]]
+        currentLine = l[0]
+        for i in range(1,len(l)):
+            if l[i] - currentLine > space*2:
+                firstLines.append(l[i])
+            currentLine = l[i]
+        
+        return space, firstLines
+
+    def drawLines(self, image, space, firstLines): # stave detection
+        outArr = []
+        for i in firstLines:
+            for j in range(5):
+                outArr.append(i + j*space)
+      
+        copyImage = np.zeros_like(image)
+
+        for elem in outArr:
+            copyImage[elem,:] = 255
+        return outArr, copyImage
+
+    def resizeTemplate(self, template, space):
+        factor = space/template.height
+        temp = template.resize((int(template.width * factor), int(template.height * factor)))
+        return temp
 
 
-plt.imshow(img, )
-
-plt.savefig("image.png",bbox_inches='tight')
-
-plt.close()
-
-#----------------------------------------------------------------------------------------#
-# Step 2: Hough Space
-
-img_shape = img.shape
-
-x_max = img_shape[0]
-y_max = img_shape[1]
-
-theta_max = 1.0 * math.pi 
-theta_min = 0.0
-
-r_min = 0.0
-r_max = math.hypot(x_max, y_max)
-
-r_dim = 200 
-theta_dim = 300
-
-hough_space = np.zeros((r_dim,theta_dim))
-
-for x in range(x_max):
-    for y in range(y_max):
-        if img[x,y] == 255: continue
-        for itheta in range(theta_dim):
-            theta = 1.0 * itheta * theta_max / theta_dim
-            r = x * math.cos(theta) + y * math.sin(theta)
-            ir = r_dim * ( 1.0 * r ) / r_max
+    def final_result(self, image, template, matchingType, textArray, symbol_type, p, dist, limitingFactor = 0.9): # referenced various sources to figure how to work PIL and get this correct
+        imgH, imgW = image.shape
+        tempH, tempW = template.shape
+    #     outImage = Image.fromarray(np.uint8(image)).convert("RGB")
+        copy_image = image.copy()
+        padding = 2
+        if matchingType=='naive':
+            maxScore = tempH * tempW
+            matchesForTemplate1 = nTM.naiveTemplateMatching(image, template, confidenceInterval = limitingFactor)
+        elif matchingType=='edge':
+            templateEdge, _, _ = nTM.getEdges(template)
+            maxScore = np.sum(templateEdge)
+            matchesForTemplate1 = nTM.edgeDetectionTemplateMatching(image, template, thresholdFactor=limitingFactor)
+        else:
+            return copy_image, textArray
+        
+        #print("Matches from templates is", len(matchesForTemplate1))
+        if matchesForTemplate1==[]:
+            return copy_image, textArray
+        for score, start_x, start_y, end_x, end_y in matchesForTemplate1:
+            if end_x >= copy_image.shape[0]-3 or end_y >= copy_image.shape[1]-3:
+                continue
+            copy_image[start_x-padding:end_x+(padding*2),start_y-padding] = 5
+            copy_image[start_x-padding:end_x+(padding*2),end_y+padding] = 5
+            copy_image[start_x-padding,start_y-padding:end_y+(padding*2)] = 5
+            copy_image[end_x+padding,start_y-padding:end_y+(padding*2)] = 5
+            pitch = '_'
             
-            hough_space[int(ir),int(itheta)] = hough_space[int(ir),int(itheta)] + 1
+            if symbol_type == 'filled_note':
+                for q in range(int(dist/2)):
+                    if q+start_x in p:
+                        pitch = p[q+start_x]
+                    elif start_x-q in p:
+                        pitch = p[start_x-q]
+                copy_image = Image.fromarray(np.uint8(copy_image))
+                draw = ImageDraw.Draw(copy_image)
+                font = ImageFont.truetype('./arial.ttf', 15) 
+                draw.text((start_y-15, start_x-15),pitch,(70),font=font)
+                copy_image = np.array(copy_image)
+            textArray.append([start_x, start_y, end_x, end_y, symbol_type, pitch, float(np.round(((score/maxScore)*100), 2))])
+            
+        return copy_image, textArray
 
-plt.imshow(hough_space, origin='lower')
-plt.xlim(0,theta_dim)
-plt.ylim(0,r_dim)
-
-tick_locs = [i for i in range(0,theta_dim,40)]
-tick_lbls = [round( (1.0 * i * theta_max) / theta_dim,1) for i in range(0,theta_dim,40)]
-plt.xticks(tick_locs, tick_lbls)
-
-tick_locs = [i for i in range(0,r_dim,20)]
-tick_lbls = [round( (1.0 * i * r_max ) / r_dim,1) for i in range(0,r_dim,20)]
-plt.yticks(tick_locs, tick_lbls)
-
-plt.xlabel(r'Theta')
-plt.ylabel(r'r')
-plt.title('Hough Space')
-
-plt.savefig("hough_space_r_theta.png",bbox_inches='tight')
-
-plt.close()
-
-#----------------------------------------------------------------------------------------#
-# Find maximas 1
-'''
-Sorted_Index_HoughTransform =  np.argsort(hough_space, axis=None)
-
-print 'Sorted_Index_HoughTransform[0]', Sorted_Index_HoughTransform[0]
-#print Sorted_Index_HoughTransform.shape, r_dim * theta_dim
-
-shape = Sorted_Index_HoughTransform.shape
-
-k = shape[0] - 1
-list_r = []
-list_theta = []
-for d in range(5):
-    i = int( Sorted_Index_HoughTransform[k] / theta_dim )
-    #print i, round( (1.0 * i * r_max ) / r_dim,1)
-    list_r.append(round( (1.0 * i * r_max ) / r_dim,1))
-    j = Sorted_Index_HoughTransform[k] - theta_dim * i
-    print 'Maxima', d+1, 'r: ', j, 'theta', round( (1.0 * j * theta_max) / theta_dim,1)
-    list_theta.append(round( (1.0 * j * theta_max) / theta_dim,1))
-    print "--------------------"
-    k = k - 1
-
-
-#theta = list_theta[7]
-#r = list_r[7]
-
-#print " r,theta",r,theta, math.degrees(theta)
-'''
-#----------------------------------------------------------------------------------------#
-# Step 3: Find maximas 2
-
-import scipy.ndimage.filters as filters
-import scipy.ndimage as ndimage
-
-neighborhood_size = 20
-threshold = 140
-
-data_max = filters.maximum_filter(hough_space, neighborhood_size)
-maxima = (hough_space == data_max)
-
-
-data_min = filters.minimum_filter(hough_space, neighborhood_size)
-diff = ((data_max - data_min) > threshold)
-maxima[diff == 0] = 0
-
-labeled, num_objects = ndimage.label(maxima)
-slices = ndimage.find_objects(labeled)
-
-x, y = [], []
-for dy,dx in slices:
-    x_center = (dx.start + dx.stop - 1)/2
-    x.append(x_center)
-    y_center = (dy.start + dy.stop - 1)/2    
-    y.append(y_center)
-
-
-
-plt.imshow(hough_space, origin='lower')
-plt.savefig('hough_space_i_j.png', bbox_inches = 'tight')
-
-plt.autoscale(False)
-plt.plot(x,y, 'ro')
-plt.savefig('hough_space_maximas.png', bbox_inches = 'tight')
-
-plt.close()
-
-#----------------------------------------------------------------------------------------#
-# Step 4: Plot lines
-
-line_index = 1
-
-for i,j in zip(y, x):
-
-    r = round( (1.0 * i * r_max ) / r_dim,1)
-    theta = round( (1.0 * j * theta_max) / theta_dim,1)
-
-    fig, ax = plt.subplots()
-
-    ax.imshow(img)
-
-    ax.autoscale(False)
-
-    px = []
-    py = []
-    for i in range(-y_max-40,y_max+40,1):
-        px.append( math.cos(-theta) * i - math.sin(-theta) * r ) 
-        py.append( math.sin(-theta) * i + math.cos(-theta) * r )
-
-    ax.plot(px,py, linewidth=10)
-
-    plt.savefig("image_line_"+ "%02d" % line_index +".png",bbox_inches='tight')
-
-    #plt.show()
-
-    plt.close()
-
-    line_index = line_index + 1
-
-#----------------------------------------------------------------------------------------#
-# Plot lines
-'''
-i = 11
-j = 264
-
-i = y[1]
-j = x[1]
-
-print i,j
-
-r = round( (1.0 * i * r_max ) / r_dim,1)
-theta = round( (1.0 * j * theta_max) / theta_dim,1)
-
-print 'r', r
-print 'theta', theta
-
-
-fig, ax = plt.subplots()
-
-ax.imshow(img)
-
-ax.autoscale(False)
-
-px = []
-py = []
-for i in range(-y_max-40,y_max+40,1):
-    px.append( math.cos(-theta) * i - math.sin(-theta) * r ) 
-    py.append( math.sin(-theta) * i + math.cos(-theta) * r )
-
-print px
-print py
-
-ax.plot(px,py, linewidth=10)
-
-plt.savefig("PlottedLine_07.png",bbox_inches='tight')
-
-#plt.show()
-
-'''
