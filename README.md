@@ -74,7 +74,7 @@ guide, step. “Edge Detection in Python. Gentle intro to the math and code… |
 
 B-457 Lecture Slides/Google Cloud
 
-### Outside Libraries Used:###
+### Outside Libraries Used: ###
 NumPy- used for mathematical operations and array manipulation
 Pillow- used for image I/O and modification
  
