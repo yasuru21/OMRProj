@@ -44,6 +44,8 @@ def getResults(image, template1, template2, template3, d):
     
     pitchDictionary = sheet.getPitchDictionary(firstLines, space)  # get dict to use
 
+
+# this is where we formulate text file, utilized
     outText = []
     outImage, outText = ht.final_result(image, template1, d['type1'], outText, "filled_note", pitchDictionary, space, threshold = d['template1Factor'])
     outImage, outText = ht.final_result(outImage, template2, d['type2'], outText, "quarter_rest", pitchDictionary, space, threshold= d['template2Factor'])
@@ -57,7 +59,7 @@ def getResults(image, template1, template2, template3, d):
 if __name__ == '__main__':
     music_file = sys.argv[1] # DO NOT RUN THIS FILE --> INPUT ON TERMINAL OR YOU WILL GET ERROR
     m1, m2, *rest = music_file.split('/')
-    print(m2)
+    print("the file you are running is: " + m2 )
     
     if m2=="music1.png": # have to adjust each factor for different input because sometimes it didnt detect it and identify notes.
         d = {'template1Factor':0.9, 'template2Factor':0.85, 'template3Factor':0.8, 

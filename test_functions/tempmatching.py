@@ -10,7 +10,7 @@ class templateMatching():
 
     def __init__(self):
         self.randomInit = 0
-
+    # referenced online resources 
     def scoring(self, scoreArr, threshold = 0.5):
         if scoreArr==[]:
             return []
@@ -49,11 +49,9 @@ class templateMatching():
             for j in range(w - tempW):
                 subImage = image[i:i+tempH, j:j+tempW]
                 score = np.sum((subImage * template1) + (1-subImage) * (1- template1))
-                # temp = np.round((score/(tempH*tempW)),1)
                 if score>=threshold:
                     scoreArr.append([int(score), i, j, i+tempH, j+tempW])
         scoreArr1 = self.scoring(scoreArr)
-        # print(scoreArr[-2:])
         return scoreArr1
 
     def getEdges(self, im, threshold = 128): #using sobel and seperable kernel to get edges
@@ -69,6 +67,8 @@ class templateMatching():
         return imageEdge, imageEdgex, imageEdgey
 
     
+    # ----------------------------------------------------------------------------------
+    # code below was created based of referencing other code that was written (refer to references section)
     def scanRange(self, f): #needed for edge temp matching
         for i, fi in enumerate(f):
             if fi == np.inf: continue
@@ -89,6 +89,7 @@ class templateMatching():
         return f
 
 
+# ------------------------------------------------------------------------------------------------
     def edgeDetectionTemplateMatching(self, image, template1, thresholdFactor = 0.25):
         imageEdge, imageEdgex, imageEdgey = self.getEdges(image)
         templateEdge1, templateEdgex1, templateEdgey1 = self.getEdges(template1)

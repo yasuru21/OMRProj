@@ -8,11 +8,12 @@ class hamming:
         
         width = image.shape[1] - template.shape[1] + 1
         height = image.shape[0] - template.shape[0] + 1
+        area = width * height
         result = np.empty((height,width))
-        
+        test1 = area * image / template
         for i in range(height):
             for j in range(width):
-                result[i,j] = np.abs(np.sum(np.subtract(image[i:i+template.shape[0],j:j+template.shape[1]],template)))
+                result[i,j] = np.abs(np.subtract(image[i:i+template.shape[0],j:j+template.shape[1]],template))
         c = (255*(result - np.min(result))/np.ptp(result)).astype(int) 
         return c
 

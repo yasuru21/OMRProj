@@ -22,15 +22,14 @@ class houghTransform():
                 if image[i][j]==0:
                     votesDict[i] +=1
         l = [key for key,value in votesDict.items() if value > int(0.5*y)]
-        
-        # Calculating the Space between the lines.
+        # detects the distance between the staph lines
         for i in range(0,len(l)-1):
             if l[i]+1 != l[i+1]:
                 if space == 0:
                     space = l[i+1]-l[i]
                 elif space == l[i+1]-l[i]:
                     break
-        # Finding the row coordinates for the first lines
+       
         firstLines = [l[0]]
         currentLine = l[0]
         for i in range(1,len(l)):
@@ -59,7 +58,6 @@ class houghTransform():
 
 
     def final_result(self, image, template, mT, txtResult, symbol_type, p, dist, threshold = 0.9): # referenced various sources to figure how to work PIL and get this correct
-        imgH, imgW = image.shape
         tempH, tempW = template.shape
     #     outImage = Image.fromarray(np.uint8(image)).convert("RGB")
         copy_image = image.copy()
