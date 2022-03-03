@@ -43,24 +43,34 @@ In this section we write functions to convert input image to grayscale and then 
 
 ### Template Matching: ###
 - This section is quite possibly the most important part of the assignment and required a lot of outside sources and brainstorming to complete
-- ***Scoring****
+- ***Scoring***
 	+ We introduce a function to initialize the way that we are going to go about scoring for accuracy. We do this by looking at the amount of overlap between the detection areas and say that when it passes a certain point to say that they contain the same object. 
-- ***Naive Matching****
+- ***Naive Matching***
 	+ We implemented a naive way of template matching (as referenced in A1.pdf) that essentially finds how similar a region of the input image is to the template in order to match each symbol. 
-- ***Edge Matching****
+- ***Edge Matching***
 	+ We also implemented a template matching in the form of edge matching. This method gets the edges from an image and compares them using matrix algebra. Similar to above we use these values to discern whether they match or not. 
 	
 ### Main.py: ###
+- The main file will take everything that we have implemented in the classes above and combine them together. In this file, we define specific dictionaries for each different input image whether it is naive matching or edge matching, template numeral factors, etc.
 
 ## Results: ##
+- Our program was able to work on test images 1 and 2 but didn’t work as well on 3 and 4. In images 3 and 4, many of the boxes are not centered around the notes.
+- Some improvements that we would like to make to this model is to use the Hamming distance because it is more efficient.
 
 ## References: ##
 Fakhfakh, Sana. “Image Retrieval Based on Using Hamming Distance.” 2015, p. 8, https://pdf.sciencedirectassets.com/280203/1-s2.0-S1877050915X00342/1-s2.0-S1877050915035012/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEM7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQDjUiNvn9k1FP7ZRpx0SjAKS6c9rOsNVBzkwyrAGInalAIhAPE3AZ6XqQmlX.
 
 Rosebrock, Adrian. “Building an Image Search Engine: Defining Your Similarity Metric (Step 3 of 4).” PyImageSearch, 17 February 2014, https://pyimagesearch.com/2014/02/17/building-an-image-search-engine-defining-your-similarity-metric-step-3-of-4/. Accessed 2 March 2022
 
+“afikanyati/cadenCV: An optical music recognition system built as a final project for 6.819: Advances in Computer Vision course at MIT. Takes sheet music as input and returns a MIDI file of written music.” GitHub, https://github.com/afikanyati/cadenCV. Accessed 2 March 2022.
+
+guide, step. “Edge Detection in Python. Gentle intro to the math and code… | by Ritvik Kharkar.” Towards Data Science, https://towardsdatascience.com/edge-detection-in-python-a3c263a13e03. Accessed 2 March 2022.
+
 B-457 Lecture Slides/Google Cloud
 
+### Outside Libraries Used:###
+NumPy- used for mathematical operations and array manipulation
+Pillow- used for image I/O and modification
  
 
 
