@@ -3,6 +3,8 @@
 ## Problem: ##
 Our task for this assignment is to create an OMR (Optical Music Recognition) program to analyze a portion of a musical score and accurately give a symbolic representation of the music as the output.
 
+<img width="786" alt="MusicPrompt" src="https://media.github.iu.edu/user/15235/files/617102b4-7a2d-4dd9-9a1f-6971429762bd">
+
 Our program must be able to analyze the notes on the staff from a musical score and then be able to identify the musical note and symbolically represent it.
 
 ## Running The File: ##
@@ -56,6 +58,10 @@ In this section we write functions to convert input image to grayscale and then 
 ## Results: ##
 - Our program was able to work on test images 1 and 2 but didn’t work as well on 3 and 4. In images 3 and 4, many of the boxes are not centered around the notes.
 - Some improvements that we would like to make to this model is to use the Hamming distance because it is more efficient.
+
+<img width="754" alt="Result1" src="https://media.github.iu.edu/user/15235/files/a214941c-9e50-4c74-9ce8-485f8bc4b59b">
+
+<img width="640" alt="Result2" src="https://media.github.iu.edu/user/15235/files/ebbdc450-54a0-40a6-a945-cd145acea890">
 
 ## References: ##
 Fakhfakh, Sana. “Image Retrieval Based on Using Hamming Distance.” 2015, p. 8, https://pdf.sciencedirectassets.com/280203/1-s2.0-S1877050915X00342/1-s2.0-S1877050915035012/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEM7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQDjUiNvn9k1FP7ZRpx0SjAKS6c9rOsNVBzkwyrAGInalAIhAPE3AZ6XqQmlX.
