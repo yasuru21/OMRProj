@@ -15,14 +15,13 @@ class houghTransform():
         space = 0
         image = np.where(image<128,0,1)
         x, y = image.shape
-        votesDict = {}
+        votesDictionary = {}
         for i in range(x):
-            votesDict[i] = 0
+            votesDictionary[i] = 0
             for j in range(y):
                 if image[i][j]==0:
-                    votesDict[i] +=1
-        l = [key for key,value in votesDict.items() if value > int(0.5*y)]
-        # detects the distance between the staph lines
+                    votesDictionary[i] +=1
+        l = [key for key,value in votesDictionary.items() if value > int(0.5*y)]
         for i in range(0,len(l)-1):
             if l[i]+1 != l[i+1]:
                 if space == 0:
@@ -39,7 +38,7 @@ class houghTransform():
         
         return space, firstLines
 
-    def drawLines(self, image, space, firstLines): # stave detection
+    def drawLines(self, image, space, firstLines): 
         outArr = []
         for i in firstLines:
             for j in range(5):
@@ -57,9 +56,8 @@ class houghTransform():
         return temp
 
 
-    def final_result(self, image, template, mT, txtResult, symbol_type, p, dist, threshold = 0.9): # referenced various sources to figure how to work PIL and get this correct
+    def final_result(self, image, template, mT, txtResult, symbol_type, p, dist, threshold = 0.9): 
         tempH, tempW = template.shape
-    #     outImage = Image.fromarray(np.uint8(image)).convert("RGB")
         copy_image = image.copy()
         padding = 2
         if mT=='naive':

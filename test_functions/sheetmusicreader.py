@@ -1,6 +1,6 @@
 
 class sheetmusic:
-    def getPitchDictionary(self, lines,dist): # dictionary used to calculate what note is which, IT IS IMPORTANT THAT STAVES ARE DETECTED CORRECTLY
+    def getPitchDictionary(self, lines,dist):
             p = {}
             j = 1 # starts at stave #1 and iterates through each one checking if it is on line or not
             for i in lines:

@@ -9,39 +9,38 @@ class kernelOperations:
         self.randomInit = 0
 
     def rgb2gray(self, rgb):
-        r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
-        gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
-        return gray
+        r = rgb[:,:,0]
+        g =  rgb[:,:,1]
+        b =  rgb[:,:,2]
+        gray_color = 0.2989 * r + 0.5870 * g + 0.1140 * b
+        return gray_color
 
     def seperableKernel(self, im, hx, hy):
         
-        im_arr = np.array(im)
-        n = hy.shape[1]
-        midPt = int(np.floor(n/2))
-        arr = np.pad(im_arr, midPt, mode='constant')
-        h, w = arr.shape
-        tempImg = np.random.randn(h-(2*midPt), w)
-        # print(tempImg.shape)
-        for i in range(h-n+1):
+        image_array = np.array(im)
+        nums = hy.shape[1]
+        mid_point = int(np.floor(n/2))
+        array = np.pad(image_array, mid_point, mode='constant')
+        h, w = array.shape
+        temp_img = np.random.randn(h-(2*mid_point), w)
+        for i in range(h-nums+1):
             for j in range(w):
-                temp = arr[i:i+n,j].reshape(n,1) * hx.T
-                # tempImg[i,j] = int((np.sum(np.abs(temp)))/(divisionFactor)) 
-                tempImg[i,j] = np.abs(np.sum(temp))
-        divFac = np.sum(hx.T*hy)
-        if divFac==0:
-            divisionFactor = n
-        outImg = np.random.randn(tempImg.shape[0], tempImg.shape[1]-(2*midPt))
+                temp = array[i:i+nums,j].reshape(nums,1) * hx.T 
+                temp_img[i,j] = np.abs(np.sum(temp))
+        div_fac = np.sum(hx.T*hy)
+        if div_fac==0:
+            divisionFactor = nums
+        output_img = np.random.randn(temp_img.shape[0], temp_img.shape[1]-(2*mid_point))
 
-        # print(outImg.shape)
-        for i in range(tempImg.shape[0]):
-            for j in range(tempImg.shape[1]-n):
-                temp = tempImg[i,j:j+n] * hy
-                outImg[i,j] = int((np.abs(np.sum(temp)))/(divisionFactor))
-        outImg = outImg.astype(int)
-        outImg = np.where(outImg>255,255,outImg)
-        outImg = np.where(outImg<0,0,outImg)
+        for i in range(temp_img.shape[0]):
+            for j in range(temp_img.shape[1]-nums):
+                temp = temp_img[i,j:j+nums] * hy
+                output_img[i,j] = int((np.abs(np.sum(temp)))/(divisionFactor))
+        output_img = output_img.astype(int)
+        output_img = np.where(output_img>255,255,output_img)
+        output_img = np.where(output_img<0,0,output_img)
         
-        return outImg
+        return output_img
 
     def seperableSobelX(self):
         hx = np.array([[1,0,-1]])
