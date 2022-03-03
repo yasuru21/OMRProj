@@ -57,7 +57,7 @@ In this section we write functions to convert input image to grayscale and then 
 
 ## Results: ##
 - Our program was able to work on test images 1 and 2 but didn’t work as well on 3 and 4. In images 3 and 4, many of the boxes are not centered around the notes.
-- Some improvements that we would like to make to this model is to use the Hamming distance because it is more efficient.
+- Some improvements that we would like to make to this model is to use the Hamming distance because it is more efficient. In addition, we feel that using a wider variety of templates may have increased the efficiency, especially as some test-images were blurrier than others.
 
 <img width="754" alt="Result1" src="https://media.github.iu.edu/user/15235/files/a214941c-9e50-4c74-9ce8-485f8bc4b59b">
 
